@@ -1,159 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Compresión por Lotes - Compresor de Audio{% endblock %}
+{% block title %}Compresión por Lotes{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card shadow">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0"><i class="fas fa-files"></i> Comprimir Múltiples Archivos WAV</h4>
-            </div>
-            <div class="card-body">
-                <form id="batchUploadForm" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="files" class="form-label">Seleccionar archivos WAV:</label>
-                        <input type="file" class="form-control" id="files" name="files" accept=".wav" multiple required>
-                        <div class="form-text">Puedes seleccionar múltiples archivos WAV. Tamaño máximo por archivo: 100MB</div>
-                    </div>
+<div class="simple-container">
+    <h2 class="mb-4">Comprimir Archivos WAV</h2>
+    <form id="batchForm" enctype="multipart/form-data">
+        <label for="files" class="form-label">Selecciona archivos WAV:</label>
+        <input type="file" class="form-control mb-3" id="files" name="files" accept=".wav" multiple required>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="bitrate" class="form-label">Bitrate:</label>
-                                <select class="form-select" id="bitrate" name="bitrate">
-                                    <option value="64k">64k (Menor calidad, menor tamaño)</option>
-                                    <option value="128k" selected>128k (Calidad estándar)</option>
-                                    <option value="192k">192k (Buena calidad)</option>
-                                    <option value="256k">256k (Alta calidad)</option>
-                                    <option value="320k">320k (Máxima calidad)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="quality" class="form-label">Calidad de compresión:</label>
-                                <select class="form-select" id="quality" name="quality">
-                                    <option value="low">Baja (Máxima compresión)</option>
-                                    <option value="medium" selected>Media (Balanceada)</option>
-                                    <option value="high">Alta (Menor compresión)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+        <label for="bitrate" class="form-label">Bitrate:</label>
+        <select class="form-select mb-3" id="bitrate" name="bitrate">
+            <option value="128k" selected>128k</option>
+            <option value="192k">192k</option>
+            <option value="256k">256k</option>
+        </select>
 
-                    <!-- Lista de archivos seleccionados -->
-                    <div id="fileList" class="mb-3" style="display: none;">
-                        <h6>Archivos seleccionados:</h6>
-                        <div id="fileListContent" class="border rounded p-3 bg-light"></div>
-                    </div>
+        <label for="quality" class="form-label">Calidad:</label>
+        <select class="form-select mb-3" id="quality" name="quality">
+            <option value="medium" selected>Media</option>
+            <option value="high">Alta</option>
+            <option value="low">Baja</option>
+        </select>
 
-                    <button type="submit" class="btn btn-success btn-lg w-100">
-                        <i class="fas fa-compress-alt"></i> Comprimir Todos los Archivos
-                    </button>
-                </form>
+        <button type="submit" class="btn btn-primary w-100">Comprimir</button>
+    </form>
 
-                <!-- Progress Bar -->
-                <div id="progressContainer" class="mt-3" style="display: none;">
-                    <div class="progress">
-                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                             role="progressbar" style="width: 0%"></div>
-                    </div>
-                    <p class="text-center mt-2" id="progressText">Procesando archivos...</p>
-                </div>
-
-                <!-- Results -->
-                <div id="results" class="mt-4" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Consejos para procesamiento por lotes -->
-        <div class="card shadow mt-4">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Consejos para Procesamiento por Lotes</h5>
-            </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    <li>Puedes seleccionar múltiples archivos a la vez manteniendo presionado Ctrl (o Cmd en Mac)</li>
-                    <li>Todos los archivos se procesarán con la misma configuración de bitrate y calidad</li>
-                    <li>Los archivos se procesarán uno por uno para evitar sobrecargar el servidor</li>
-                    <li>El tiempo de procesamiento depende del tamaño y cantidad de archivos</li>
-                </ul>
-            </div>
+    <div id="progress" class="mt-3" style="display:none;">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" style="width:0%"></div>
         </div>
     </div>
+
+    <div id="results" class="mt-3"></div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Mostrar lista de archivos seleccionados
-document.getElementById('files').addEventListener('change', function(e) {
-    const files = e.target.files;
-    const fileList = document.getElementById('fileList');
-    const fileListContent = document.getElementById('fileListContent');
-
-    if (files.length > 0) {
-        let html = '<div class="row">';
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const sizeKB = (file.size / 1024).toFixed(1);
-            html += `
-                <div class="col-md-6 mb-2">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-file-audio text-primary me-2"></i>
-                        <div>
-                            <strong>${file.name}</strong><br>
-                            <small class="text-muted">${sizeKB} KB</small>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        html += '</div>';
-
-        fileListContent.innerHTML = html;
-        fileList.style.display = 'block';
-    } else {
-        fileList.style.display = 'none';
-    }
-});
-
-document.getElementById('batchUploadForm').addEventListener('submit', function(e) {
+document.getElementById('batchForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const formData = new FormData();
-    const filesInput = document.getElementById('files');
-    const bitrateInput = document.getElementById('bitrate');
-    const qualityInput = document.getElementById('quality');
+    const formData = new FormData(this);
+    const progress = document.getElementById('progress');
+    const results = document.getElementById('results');
 
-    if (filesInput.files.length === 0) {
-        alert('Por favor selecciona al menos un archivo WAV');
-        return;
-    }
-
-    // Agregar todos los archivos al FormData
-    for (let i = 0; i < filesInput.files.length; i++) {
-        formData.append('files', filesInput.files[i]);
-    }
-    formData.append('bitrate', bitrateInput.value);
-    formData.append('quality', qualityInput.value);
-
-    // Mostrar progress bar
-    document.getElementById('progressContainer').style.display = 'block';
-    document.getElementById('results').style.display = 'none';
-
-    // Simular progreso
-    let progress = 0;
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-
-    const progressInterval = setInterval(() => {
-        progress += Math.random() * 10;
-        if (progress > 85) progress = 85;
-        progressBar.style.width = progress + '%';
-        progressText.textContent = `Procesando ${filesInput.files.length} archivos... ${Math.round(progress)}%`;
-    }, 800);
+    progress.style.display = 'block';
+    results.innerHTML = '';
 
     fetch('/batch_upload', {
         method: 'POST',
@@ -161,99 +54,24 @@ document.getElementById('batchUploadForm').addEventListener('submit', function(e
     })
     .then(response => response.json())
     .then(data => {
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
-        progressText.textContent = 'Completado!';
+        progress.style.display = 'none';
 
-        setTimeout(() => {
-            document.getElementById('progressContainer').style.display = 'none';
-
-            if (data.results) {
-                let successCount = 0;
-                let totalSize = 0;
-                let compressedSize = 0;
-
-                let resultHtml = '<div class="table-responsive"><table class="table table-striped">';
-                resultHtml += '<thead><tr><th>Archivo</th><th>Estado</th><th>Tamaño Original</th><th>Tamaño Comprimido</th><th>Reducción</th><th>Acción</th></tr></thead><tbody>';
-
-                data.results.forEach(result => {
-                    if (result.success) {
-                        successCount++;
-                        totalSize += result.original_size;
-                        compressedSize += result.compressed_size;
-
-                        resultHtml += `
-                            <tr class="table-success">
-                                <td><i class="fas fa-file-audio"></i> ${result.filename}</td>
-                                <td><span class="badge bg-success">Éxito</span></td>
-                                <td>${result.original_size} MB</td>
-                                <td>${result.compressed_size} MB</td>
-                                <td>${result.compression_ratio}%</td>
-                                <td><a href="${result.download_url}" class="btn btn-sm btn-success"><i class="fas fa-download"></i> Descargar</a></td>
-                            </tr>
-                        `;
-                    } else {
-                        resultHtml += `
-                            <tr class="table-danger">
-                                <td><i class="fas fa-file-audio"></i> ${result.filename}</td>
-                                <td><span class="badge bg-danger">Error</span></td>
-                                <td colspan="3">${result.error}</td>
-                                <td>-</td>
-                            </tr>
-                        `;
-                    }
-                });
-
-                resultHtml += '</tbody></table></div>';
-
-                const totalReduction = totalSize > 0 ? ((totalSize - compressedSize) / totalSize * 100).toFixed(1) : 0;
-
-                document.getElementById('results').innerHTML = `
-                    <div class="alert alert-${successCount === data.results.length ? 'success' : 'warning'}">
-                        <h5><i class="fas fa-chart-bar"></i> Resumen del Procesamiento</h5>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <strong>Archivos procesados:</strong><br>
-                                ${successCount} de ${data.results.length} exitosos
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Tamaño total original:</strong><br>
-                                ${totalSize.toFixed(2)} MB
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Tamaño total comprimido:</strong><br>
-                                ${compressedSize.toFixed(2)} MB
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Reducción total:</strong><br>
-                                ${totalReduction}%
-                            </div>
-                        </div>
-                    </div>
-                    ${resultHtml}
-                `;
-            } else {
-                document.getElementById('results').innerHTML = `
-                    <div class="alert alert-danger">
-                        <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
-                        <p>${data.error}</p>
-                    </div>
-                `;
-            }
-
-            document.getElementById('results').style.display = 'block';
-        }, 1000);
+        if (data.results) {
+            let html = '<h5>Resultados:</h5><ul>';
+            data.results.forEach(result => {
+                if (result.success) {
+                    html += `<li>${result.filename} - <a href="${result.download_url}">Descargar</a></li>`;
+                } else {
+                    html += `<li>${result.filename} - Error: ${result.error}</li>`;
+                }
+            });
+            html += '</ul>';
+            results.innerHTML = html;
+        }
     })
     .catch(error => {
-        clearInterval(progressInterval);
-        document.getElementById('progressContainer').style.display = 'none';
-        document.getElementById('results').innerHTML = `
-            <div class="alert alert-danger">
-                <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
-                <p>Error de conexión: ${error.message}</p>
-            </div>
-        `;
-        document.getElementById('results').style.display = 'block';
+        progress.style.display = 'none';
+        results.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
     });
 });
 </script>
