@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.gitignore
+README.md
+.dockerignore
+Dockerfile
+.pytest_cache
+.coverage
+uploads/*
+compressed/*
+*.wav
+*.mp3
+
