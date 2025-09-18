@@ -2,14 +2,24 @@
 
 Una aplicación Flask para comprimir archivos de audio WAV a MP3 con diferentes niveles de calidad. También incluye una herramienta de línea de comandos para uso directo.
 
-## 🚀 Características
+## Características
 
 - **Aplicación Web**: Interfaz web intuitiva para subir y comprimir archivos
 - **Múltiples Calidades**: Diferentes bitrates (64k, 128k, 192k, 256k, 320k)
 - **Niveles de Calidad**: Presets de calidad (baja, media, alta)
 - **Docker Support**: Contenedor Docker para despliegue fácil
 
-## 📋 Requisitos del Sistema
+## Acceso Rápido
+
+Si no quieres instalar la aplicación localmente, puedes acceder directamente a la versión desplegada:
+
+**[https://compresor-alfy.onrender.com/](https://compresor-alfy.onrender.com/)**
+
+> **Nota**: A veces cuando accedas al enlace puede tardar unos minutos en cargar mientras Render reactiva la aplicación. Esto es normal en el plan gratuito de Render.
+
+---
+
+## Requisitos del Sistema
 
 ### Dependencias Principales
 - Python 3.12 (recomendado) o 3.11
@@ -20,7 +30,7 @@ Una aplicación Flask para comprimir archivos de audio WAV a MP3 con diferentes 
 - macOS 10.15+
 - Linux (Ubuntu, Debian, CentOS, etc.)
 
-## 🛠️ Instalación
+## Instalación
 
 En caso de no tener python 3.12 o anterior, usar la [Opcion 2](#opción-2-docker) (por medio de Docker), de lo contrario usa la [Opcion 1](#opción-1-instalación-local)
 
