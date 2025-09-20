@@ -168,7 +168,7 @@ La aplicación estará disponible en: `http://localhost:5000`
    docker run -p 5000:5000 huffman-app
    
    # Opcion 2: Usar la terminal
-   docker run -it huffman-app python huffman.py -c archivo.wav
+   docker run -it -v ruta\a\carpeta:/data huffman-app python huffman.py -c /data/archivo.wav
    ```
 
 Para la **Opción 1** a aplicación estará disponible en: `http://localhost:5000`
