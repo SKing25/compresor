@@ -159,12 +159,16 @@ La aplicación estará disponible en: `http://localhost:5000`
 
 2. **Construir la imagen Docker**:
    ```bash
-   docker build -t compresor-audio .
+   docker build -t huffman-app .
    ```
 
 3. **Ejecutar el contenedor**:
    ```bash
-   docker run -p 5000:5000 compresor-audio
+   # Opcion 1: Usar la aplicacion web
+   docker run -p 5000:5000 huffman-app
+   
+   # Opcion 2: Usar la terminal
+   docker run -it huffman-app python huffman.py -c archivo.wav
    ```
 
-La aplicación estará disponible en: `http://localhost:5000`
+Para la **Opción 1** a aplicación estará disponible en: `http://localhost:5000`

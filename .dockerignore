@@ -1,17 +1,67 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.so
+.Python
+
+# Entorno virtual
 .env
-.git
+.venv/
+venv/
+env/
+ENV/
+
+# Git
+.git/
 .gitignore
-README.md
+
+# Docker
 .dockerignore
-Dockerfile
-.pytest_cache
+Dockerfile*
+docker-compose*.yml
+
+# Testing y desarrollo
+.pytest_cache/
 .coverage
+.tox/
+tests/
+test_*.py
+*_test.py
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Aplicación específica - DATOS TEMPORALES
 uploads/*
 compressed/*
+temp_*.wav
 *.wav
 *.mp3
 
+# Documentación (opcional - podrías incluirla)
+README.md
+docs/
+*.md
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.tmp
+*~
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
